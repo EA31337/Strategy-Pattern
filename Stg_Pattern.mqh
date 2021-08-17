@@ -23,7 +23,7 @@ INPUT float Pattern_OrderCloseLoss = 0;         // Order close loss
 INPUT float Pattern_OrderCloseProfit = 0;       // Order close profit
 INPUT int Pattern_OrderCloseTime = -30;         // Order close time in mins (>0) or bars (<0)
 INPUT_GROUP("Pattern strategy: Pattern indicator params");
-INPUT int Pattern_Indi_Pattern_Shift = 0;  // Shift
+INPUT int Pattern_Indi_Pattern_Shift = 1;  // Shift
 
 // Structs.
 
@@ -96,19 +96,19 @@ class Stg_Pattern : public Strategy {
         // Buy signal.
         switch (_method / 32) {
           case 5:
-            _result &= (_entry.GetValue<int>(5) & 1 << (_method - 1)) != 0;
+            _result &= (_entry.GetValue<int>(5) & 1 << ((_method - 1) / 32 * 5)) != 0;
             break;
           case 4:
-            _result &= (_entry.GetValue<int>(4) & 1 << (_method - 1)) != 0;
+            _result &= (_entry.GetValue<int>(4) & 1 << ((_method - 1) / 32 * 4)) != 0;
             break;
           case 3:
-            _result &= (_entry.GetValue<int>(3) & 1 << (_method - 1)) != 0;
+            _result &= (_entry.GetValue<int>(3) & 1 << ((_method - 1) / 32 * 3)) != 0;
             break;
           case 2:
-            _result &= (_entry.GetValue<int>(2) & 1 << (_method - 1)) != 0;
+            _result &= (_entry.GetValue<int>(2) & 1 << ((_method - 1) / 32 * 2)) != 0;
             break;
           case 1:
-            _result &= (_entry.GetValue<int>(1) & 1 << (_method - 1)) != 0;
+            _result &= (_entry.GetValue<int>(1) & 1 << ((_method - 1) / 32 * 1)) != 0;
             break;
           case 0:
             _result &= (_entry.GetValue<int>(0) & 1 << (_method - 1)) != 0;
@@ -117,24 +117,24 @@ class Stg_Pattern : public Strategy {
         break;
       case ORDER_TYPE_SELL:
         // Sell signal.
-        switch (_method / 32) {
+        switch (_method / 1000 / 32) {
           case 5:
-            _result &= (_entry.GetValue<int>(5) & 1 << (_method * 32 * 2 - 1)) != 0;
+            _result &= (_entry.GetValue<int>(5) & 1 << ((_method - 1000) / 1000 - 32 * 5)) != 0;
             break;
           case 4:
-            _result &= (_entry.GetValue<int>(4) & 1 << (_method * 32 * 2 - 1)) != 0;
+            _result &= (_entry.GetValue<int>(4) & 1 << ((_method - 1000) / 1000 - 32 * 4)) != 0;
             break;
           case 3:
-            _result &= (_entry.GetValue<int>(3) & 1 << (_method * 32 * 2 - 1)) != 0;
+            _result &= (_entry.GetValue<int>(3) & 1 << ((_method - 1000) / 1000 - 32 * 3)) != 0;
             break;
           case 2:
-            _result &= (_entry.GetValue<int>(2) & 1 << (_method * 32 * 2 - 1)) != 0;
+            _result &= (_entry.GetValue<int>(2) & 1 << ((_method - 1000) / 1000 - 32 * 2)) != 0;
             break;
           case 1:
-            _result &= (_entry.GetValue<int>(1) & 1 << (_method * 32 * 2 - 1)) != 0;
+            _result &= (_entry.GetValue<int>(1) & 1 << ((_method - 1000) / 1000 - 32 * 1)) != 0;
             break;
           case 0:
-            _result &= (_entry.GetValue<int>(0) & 1 << (_method * 32 * 2 - 1)) != 0;
+            _result &= (_entry.GetValue<int>(0) & 1 << ((_method - 1000) / 1000)) != 0;
             break;
         }
         break;
