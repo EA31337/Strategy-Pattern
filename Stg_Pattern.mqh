@@ -27,12 +27,10 @@ INPUT int Pattern_Indi_Pattern_Shift = 0;  // Shift
 
 // Structs.
 
-/*
 // Defines struct with default user indicator values.
-struct Indi_Pattern_Params_Defaults : PatternIndiParams {
-  Indi_Pattern_Params_Defaults() : PatternIndiParams(::Pattern_Indi_Pattern_Shift) {}
+struct Indi_Pattern_Params_Defaults : IndiPatternParams {
+  Indi_Pattern_Params_Defaults() : IndiPatternParams(::Pattern_Indi_Pattern_Shift) {}
 } indi_pattern_defaults;
-*/
 
 // Defines struct with default user strategy values.
 struct Stg_Pattern_Params_Defaults : StgParams {
@@ -47,21 +45,6 @@ struct Stg_Pattern_Params_Defaults : StgParams {
     Set(STRAT_PARAM_SOFT, Pattern_SignalOpenFilterTime);
   }
 } stg_pattern_defaults;
-
-/*
-// Struct to define strategy parameters to override.
-struct Stg_Pattern_Params : StgParams {
-  // PatternIndiParams iparams;
-  StgParams sparams;
-
-  // Struct constructors.
-  Stg_Pattern_Params(PatternIndiParams &_iparams, StgParams &_sparams)
-      : iparams(indi_pattern_defaults, _iparams.tf.GetTf()), sparams(stg_pattern_defaults) {
-    iparams = _iparams;
-    sparams = _sparams;
-  }
-};
-*/
 
 #ifdef __config__
 // Loads pair specific param values.
@@ -81,15 +64,14 @@ class Stg_Pattern : public Strategy {
 
   static Stg_Pattern *Init(ENUM_TIMEFRAMES _tf = NULL, long _magic_no = NULL, ENUM_LOG_LEVEL _log_level = V_INFO) {
     // Initialize strategy initial values.
-    // PatternIndiParams _indi_params(indi_pattern_defaults, _tf);
+    IndiPatternParams _indi_params(indi_pattern_defaults, _tf);
     StgParams _stg_params(stg_pattern_defaults);
 #ifdef __config__
     SetParamsByTf<StgParams>(_stg_params, _tf, stg_pattern_m1, stg_pattern_m5, stg_pattern_m15, stg_pattern_m30,
                              stg_pattern_h1, stg_pattern_h4, stg_pattern_h8);
 #endif
     // Initialize indicator.
-    // PatternIndiParams pattern_params(_indi_params);
-    // _stg_params.SetIndicator(new Indi_Pattern(_indi_params));
+    _stg_params.SetIndicator(new Indi_Pattern(_indi_params));
     // Initialize Strategy instance.
     ChartParams _cparams(_tf, _Symbol);
     TradeParams _tparams(_magic_no, _log_level);
@@ -101,31 +83,62 @@ class Stg_Pattern : public Strategy {
    * Check strategy's opening signal.
    */
   bool SignalOpen(ENUM_ORDER_TYPE _cmd, int _method, float _level = 0.0f, int _shift = 0) {
-    bool _result = false;
-    // Indi_Pattern *_indi = GetIndicator();
-    // bool _result = _indi.GetFlag(INDI_ENTRY_FLAG_IS_VALID, _shift) && _indi.GetFlag(INDI_ENTRY_FLAG_IS_VALID, _shift
-    // + 2);
+    Indi_Pattern *_indi = GetIndicator();
+    bool _result =
+        _indi.GetFlag(INDI_ENTRY_FLAG_IS_VALID, _shift) && _indi.GetFlag(INDI_ENTRY_FLAG_IS_VALID, _shift + 2);
     if (!_result) {
       // Returns false when indicator data is not valid.
       return false;
     }
-    /*
-    IndicatorSignal _signals = _indi.GetSignals(4, _shift);
+    IndicatorDataEntry _entry = _indi[_shift];
     switch (_cmd) {
       case ORDER_TYPE_BUY:
         // Buy signal.
-        _result &= _indi.IsIncreasing(1, 0, _shift);
-        _result &= _indi.IsIncByPct(_level / 10, 0, _shift, 2);
-        _result &= _method > 0 ? _signals.CheckSignals(_method) : _signals.CheckSignalsAll(-_method);
+        switch (_method / 32) {
+          case 5:
+            _result &= (_entry.GetValue<int>(5) & 1 << (_method - 1)) != 0;
+            break;
+          case 4:
+            _result &= (_entry.GetValue<int>(4) & 1 << (_method - 1)) != 0;
+            break;
+          case 3:
+            _result &= (_entry.GetValue<int>(3) & 1 << (_method - 1)) != 0;
+            break;
+          case 2:
+            _result &= (_entry.GetValue<int>(2) & 1 << (_method - 1)) != 0;
+            break;
+          case 1:
+            _result &= (_entry.GetValue<int>(1) & 1 << (_method - 1)) != 0;
+            break;
+          case 0:
+            _result &= (_entry.GetValue<int>(0) & 1 << (_method - 1)) != 0;
+            break;
+        }
         break;
       case ORDER_TYPE_SELL:
         // Sell signal.
-        _result &= _indi.IsDecreasing(1, 0, _shift);
-        _result &= _indi.IsDecByPct(_level / 10, 0, _shift, 2);
-        _result &= _method > 0 ? _signals.CheckSignals(_method) : _signals.CheckSignalsAll(-_method);
+        switch (_method / 32) {
+          case 5:
+            _result &= (_entry.GetValue<int>(5) & 1 << (_method * 32 * 2 - 1)) != 0;
+            break;
+          case 4:
+            _result &= (_entry.GetValue<int>(4) & 1 << (_method * 32 * 2 - 1)) != 0;
+            break;
+          case 3:
+            _result &= (_entry.GetValue<int>(3) & 1 << (_method * 32 * 2 - 1)) != 0;
+            break;
+          case 2:
+            _result &= (_entry.GetValue<int>(2) & 1 << (_method * 32 * 2 - 1)) != 0;
+            break;
+          case 1:
+            _result &= (_entry.GetValue<int>(1) & 1 << (_method * 32 * 2 - 1)) != 0;
+            break;
+          case 0:
+            _result &= (_entry.GetValue<int>(0) & 1 << (_method * 32 * 2 - 1)) != 0;
+            break;
+        }
         break;
     }
-    */
     return _result;
   }
 };
