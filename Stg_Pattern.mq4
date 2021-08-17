@@ -6,8 +6,8 @@
 
 /**
  * @file
- * Implements Demo strategy.
+ * Implements Pattern strategy.
  */
 
 // Includes the main code.
-#include "Stg_Demo.mq5"
+#include "Stg_Pattern.mq5"
