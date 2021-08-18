@@ -84,14 +84,16 @@ class Stg_Pattern : public Strategy {
    */
   bool SignalOpen(ENUM_ORDER_TYPE _cmd, int _method, float _level = 0.0f, int _shift = 0) {
     Indi_Pattern *_indi = GetIndicator();
+    BarOHLC _ohlc0 = _indi.GetOHLC(_shift);
+    BarOHLC _ohlc1 = _indi.GetOHLC(_shift + 1);
     bool _result =
         _indi.GetFlag(INDI_ENTRY_FLAG_IS_VALID, _shift) && _indi.GetFlag(INDI_ENTRY_FLAG_IS_VALID, _shift + 2);
+    _result &= _ohlc0.IsValid();
+    _result &= _ohlc1.IsValid();
     if (!_result) {
       // Returns false when indicator data is not valid.
       return false;
     }
-    BarOHLC _ohlc0 = _indi.GetOHLC(_shift);
-    BarOHLC _ohlc1 = _indi.GetOHLC(_shift + 1);
     IndicatorDataEntry _entry = _indi[_shift];
     double _change_pc = Math::ChangeInPct(_ohlc0.GetRange(), _ohlc1.GetRange());
     _result &= fabs(_change_pc) > _level;
