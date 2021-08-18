@@ -6,22 +6,22 @@
 // User input params.
 INPUT_GROUP("Pattern strategy: strategy params");
 INPUT float Pattern_LotSize = 0;                // Lot size
-INPUT int Pattern_SignalOpenMethod = 0;         // Signal open method
-INPUT float Pattern_SignalOpenLevel = 0;        // Signal open level
-INPUT int Pattern_SignalOpenFilterMethod = 32;  // Signal open filter method
-INPUT int Pattern_SignalOpenFilterTime = 8;     // Signal open filter time (0-31)
+INPUT int Pattern_SignalOpenMethod = 24064;     // Signal open method (0-161000)
+INPUT float Pattern_SignalOpenLevel = 0.6f;     // Signal open level
+INPUT int Pattern_SignalOpenFilterMethod = 40;  // Signal open filter method
+INPUT int Pattern_SignalOpenFilterTime = 1;     // Signal open filter time (0-31)
 INPUT int Pattern_SignalOpenBoostMethod = 0;    // Signal open boost method
-INPUT int Pattern_SignalCloseMethod = 0;        // Signal close method
-INPUT int Pattern_SignalCloseFilter = 32;       // Signal close filter (-127-127)
-INPUT float Pattern_SignalCloseLevel = 0;       // Signal close level
+INPUT int Pattern_SignalCloseMethod = 132012;   // Signal close method (0-161000)
+INPUT int Pattern_SignalCloseFilter = 10;       // Signal close filter (-127-127)
+INPUT float Pattern_SignalCloseLevel = 0.7f;    // Signal close level
 INPUT int Pattern_PriceStopMethod = 0;          // Price limit method
-INPUT float Pattern_PriceStopLevel = 2;         // Price limit level
-INPUT int Pattern_TickFilterMethod = 1;         // Tick filter method (0-255)
+INPUT float Pattern_PriceStopLevel = 0;         // Price limit level
+INPUT int Pattern_TickFilterMethod = 2;         // Tick filter method (0-255)
 INPUT float Pattern_MaxSpread = 4.0;            // Max spread to trade (in pips)
 INPUT short Pattern_Shift = 0;                  // Shift
 INPUT float Pattern_OrderCloseLoss = 0;         // Order close loss
 INPUT float Pattern_OrderCloseProfit = 0;       // Order close profit
-INPUT int Pattern_OrderCloseTime = -30;         // Order close time in mins (>0) or bars (<0)
+INPUT int Pattern_OrderCloseTime = -6;          // Order close time in mins (>0) or bars (<0)
 INPUT_GROUP("Pattern strategy: Pattern indicator params");
 INPUT int Pattern_Indi_Pattern_Shift = 1;  // Shift
 
@@ -90,52 +90,22 @@ class Stg_Pattern : public Strategy {
       // Returns false when indicator data is not valid.
       return false;
     }
+    BarOHLC _ohlc0 = _indi.GetOHLC(_shift);
+    BarOHLC _ohlc1 = _indi.GetOHLC(_shift + 1);
     IndicatorDataEntry _entry = _indi[_shift];
+    double _change_pc = Math::ChangeInPct(_ohlc0.GetRange(), _ohlc1.GetRange());
+    _result &= fabs(_change_pc) > _level;
     switch (_cmd) {
       case ORDER_TYPE_BUY:
         // Buy signal.
-        switch (_method / 32) {
-          case 5:
-            _result &= (_entry.GetValue<int>(5) & 1 << ((_method - 1) / 32 * 5)) != 0;
-            break;
-          case 4:
-            _result &= (_entry.GetValue<int>(4) & 1 << ((_method - 1) / 32 * 4)) != 0;
-            break;
-          case 3:
-            _result &= (_entry.GetValue<int>(3) & 1 << ((_method - 1) / 32 * 3)) != 0;
-            break;
-          case 2:
-            _result &= (_entry.GetValue<int>(2) & 1 << ((_method - 1) / 32 * 2)) != 0;
-            break;
-          case 1:
-            _result &= (_entry.GetValue<int>(1) & 1 << ((_method - 1) / 32 * 1)) != 0;
-            break;
-          case 0:
-            _result &= (_entry.GetValue<int>(0) & 1 << (_method - 1)) != 0;
-            break;
+        if (_method != 0) {
+          _result &= (_entry.GetValue<int>(fmin(4, _method / 32)) & (1 << (_method % 32))) != 0;
         }
         break;
       case ORDER_TYPE_SELL:
         // Sell signal.
-        switch (_method / 1000 / 32) {
-          case 5:
-            _result &= (_entry.GetValue<int>(5) & 1 << ((_method - 1000) / 1000 - 32 * 5)) != 0;
-            break;
-          case 4:
-            _result &= (_entry.GetValue<int>(4) & 1 << ((_method - 1000) / 1000 - 32 * 4)) != 0;
-            break;
-          case 3:
-            _result &= (_entry.GetValue<int>(3) & 1 << ((_method - 1000) / 1000 - 32 * 3)) != 0;
-            break;
-          case 2:
-            _result &= (_entry.GetValue<int>(2) & 1 << ((_method - 1000) / 1000 - 32 * 2)) != 0;
-            break;
-          case 1:
-            _result &= (_entry.GetValue<int>(1) & 1 << ((_method - 1000) / 1000 - 32 * 1)) != 0;
-            break;
-          case 0:
-            _result &= (_entry.GetValue<int>(0) & 1 << ((_method - 1000) / 1000)) != 0;
-            break;
+        if (fabs(_method) >= 1000) {
+          _result &= (_entry.GetValue<int>(fmin(4, _method / 1000 / 32)) & (1 << (int(_method / 1000) % 32))) != 0;
         }
         break;
     }
