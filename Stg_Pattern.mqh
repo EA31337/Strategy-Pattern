@@ -39,6 +39,7 @@ struct Stg_Pattern_Params_Defaults : StgParams {
                   ::Pattern_SignalOpenBoostMethod, ::Pattern_SignalCloseMethod, ::Pattern_SignalCloseFilter,
                   ::Pattern_SignalCloseLevel, ::Pattern_PriceStopMethod, ::Pattern_PriceStopLevel,
                   ::Pattern_TickFilterMethod, ::Pattern_MaxSpread, ::Pattern_Shift) {
+    Set(STRAT_PARAM_LS, Pattern_LotSize);
     Set(STRAT_PARAM_OCL, Pattern_OrderCloseLoss);
     Set(STRAT_PARAM_OCP, Pattern_OrderCloseProfit);
     Set(STRAT_PARAM_OCT, Pattern_OrderCloseTime);
