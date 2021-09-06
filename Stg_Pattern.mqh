@@ -19,8 +19,8 @@ INPUT float Pattern_PriceStopLevel = 2;         // Price limit level
 INPUT int Pattern_TickFilterMethod = 32;        // Tick filter method (0-255)
 INPUT float Pattern_MaxSpread = 4.0;            // Max spread to trade (in pips)
 INPUT short Pattern_Shift = 0;                  // Shift
-INPUT float Pattern_OrderCloseLoss = 0;         // Order close loss
-INPUT float Pattern_OrderCloseProfit = 0;       // Order close profit
+INPUT float Pattern_OrderCloseLoss = 80;        // Order close loss
+INPUT float Pattern_OrderCloseProfit = 80;      // Order close profit
 INPUT int Pattern_OrderCloseTime = -6;          // Order close time in mins (>0) or bars (<0)
 INPUT_GROUP("Pattern strategy: Pattern indicator params");
 INPUT int Pattern_Indi_Pattern_Shift = 1;  // Shift
