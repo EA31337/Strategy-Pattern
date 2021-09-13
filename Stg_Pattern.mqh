@@ -30,7 +30,7 @@ INPUT int Pattern_Indi_Pattern_Shift = 1;  // Shift
 // Defines struct with default user indicator values.
 struct Indi_Pattern_Params_Defaults : IndiPatternParams {
   Indi_Pattern_Params_Defaults() : IndiPatternParams(::Pattern_Indi_Pattern_Shift) {}
-} indi_pattern_defaults;
+};
 
 // Defines struct with default user strategy values.
 struct Stg_Pattern_Params_Defaults : StgParams {
@@ -45,7 +45,7 @@ struct Stg_Pattern_Params_Defaults : StgParams {
     Set(STRAT_PARAM_OCT, Pattern_OrderCloseTime);
     Set(STRAT_PARAM_SOFT, Pattern_SignalOpenFilterTime);
   }
-} stg_pattern_defaults;
+};
 
 #ifdef __config__
 // Loads pair specific param values.
@@ -65,7 +65,9 @@ class Stg_Pattern : public Strategy {
 
   static Stg_Pattern *Init(ENUM_TIMEFRAMES _tf = NULL) {
     // Initialize strategy initial values.
+    Indi_Pattern_Params_Defaults indi_pattern_defaults;
     IndiPatternParams _indi_params(indi_pattern_defaults, _tf);
+    Stg_Pattern_Params_Defaults stg_pattern_defaults;
     StgParams _stg_params(stg_pattern_defaults);
 #ifdef __config__
     SetParamsByTf<StgParams>(_stg_params, _tf, stg_pattern_m1, stg_pattern_m5, stg_pattern_m15, stg_pattern_m30,
