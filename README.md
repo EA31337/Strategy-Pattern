@@ -22,6 +22,7 @@ Strategy based on the Pattern indicator.
 | v1.005   | v2.005    |
 | v1.006   | v2.006    |
 | v1.007   | v2.007    |
+| v1.008   | v2.008    |
 
 <!-- Named links -->
 
