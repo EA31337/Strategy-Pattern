@@ -65,8 +65,6 @@ class Stg_Pattern : public Strategy {
 
   static Stg_Pattern *Init(ENUM_TIMEFRAMES _tf = NULL) {
     // Initialize strategy initial values.
-    Indi_Pattern_Params_Defaults indi_pattern_defaults;
-    IndiPatternParams _indi_params(indi_pattern_defaults, _tf);
     Stg_Pattern_Params_Defaults stg_pattern_defaults;
     StgParams _stg_params(stg_pattern_defaults);
 #ifdef __config__
@@ -78,8 +76,16 @@ class Stg_Pattern : public Strategy {
     ChartParams _cparams(_tf, _Symbol);
     TradeParams _tparams;
     Strategy *_strat = new Stg_Pattern(_stg_params, _tparams, _cparams, "Pattern");
-    _strat.SetIndicator(new Indi_Pattern(_indi_params));
     return _strat;
+  }
+
+  /**
+   * Event on strategy's init.
+   */
+  void OnInit() {
+    Indi_Pattern_Params_Defaults indi_pattern_defaults;
+    IndiPatternParams _indi_params(indi_pattern_defaults, Get<ENUM_TIMEFRAMES>(STRAT_PARAM_TF));
+    SetIndicator(new Indi_Pattern(_indi_params));
   }
 
   /**
