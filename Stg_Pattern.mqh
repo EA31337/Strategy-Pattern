@@ -26,12 +26,6 @@ INPUT_GROUP("Pattern strategy: Pattern indicator params");
 INPUT int Pattern_Indi_Pattern_Shift = 1;  // Shift
 
 // Structs.
-
-// Defines struct with default user indicator values.
-struct Indi_Pattern_Params_Defaults : IndiPatternParams {
-  Indi_Pattern_Params_Defaults() : IndiPatternParams(::Pattern_Indi_Pattern_Shift) {}
-};
-
 // Defines struct with default user strategy values.
 struct Stg_Pattern_Params_Defaults : StgParams {
   Stg_Pattern_Params_Defaults()
@@ -83,8 +77,8 @@ class Stg_Pattern : public Strategy {
    * Event on strategy's init.
    */
   void OnInit() {
-    Indi_Pattern_Params_Defaults indi_pattern_defaults;
-    IndiPatternParams _indi_params(indi_pattern_defaults, Get<ENUM_TIMEFRAMES>(STRAT_PARAM_TF));
+    IndiPatternParams _indi_params(::Pattern_Indi_Pattern_Shift);
+    _indi_params.SetTf(Get<ENUM_TIMEFRAMES>(STRAT_PARAM_TF));
     SetIndicator(new Indi_Pattern(_indi_params));
   }
 
