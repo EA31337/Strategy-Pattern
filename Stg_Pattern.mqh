@@ -6,12 +6,12 @@
 // User input params.
 INPUT_GROUP("Pattern strategy: strategy params");
 INPUT float Pattern_LotSize = 0;                // Lot size
-INPUT int Pattern_SignalOpenMethod = 24064;     // Signal open method (0-161000)
+INPUT int Pattern_SignalOpenMethod = 103015;    // Signal open method (0-161000)
 INPUT float Pattern_SignalOpenLevel = 0.6f;     // Signal open level
 INPUT int Pattern_SignalOpenFilterMethod = 40;  // Signal open filter method
 INPUT int Pattern_SignalOpenFilterTime = 3;     // Signal open filter time (0-31)
 INPUT int Pattern_SignalOpenBoostMethod = 0;    // Signal open boost method
-INPUT int Pattern_SignalCloseMethod = 132012;   // Signal close method (0-161000)
+INPUT int Pattern_SignalCloseMethod = 111029;   // Signal close method (0-161000)
 INPUT int Pattern_SignalCloseFilter = 10;       // Signal close filter (-127-127)
 INPUT float Pattern_SignalCloseLevel = 0.7f;    // Signal close level
 INPUT int Pattern_PriceStopMethod = 0;          // Price limit method
